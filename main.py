@@ -14,10 +14,11 @@ y_train = 2**x_train
 # Створюємо модель нейромережі
 # Вхідний шар з одним нейроном
 input_layer = Input(shape=(1,))
-# Прихований шар з 10 нейронами та функцією активації сігмоїдального типу
-hidden_layer = Dense(10, activation='sigmoid')(input_layer)
+# Два приховані шари з 5 нейронами та функцією активації сігмоїдального типу
+hidden_layer_1 = Dense(5, activation='sigmoid')(input_layer)
+hidden_layer_2 = Dense(5, activation='sigmoid')(hidden_layer_1)
 # Вихідний шар з одним нейроном
-output_layer = Dense(1)(hidden_layer)
+output_layer = Dense(1)(hidden_layer_2)
 
 # Створюємо модель нейромережі
 model = tf.keras.models.Model(inputs=input_layer, outputs=output_layer)
@@ -29,7 +30,17 @@ model.summary()
 model.compile(loss='mean_squared_error', optimizer=keras.optimizers.Adam(0.1))
 
 # Навчаємо модель на вхідних даних
-model.fit(x = x_train, y = y_train, epochs=10000, batch_size=101)
+history = model.fit(x = x_train, y = y_train, epochs=10000, batch_size=101)
+
+# Отримуємо значення функції втрат на кожній епосі тренування
+loss = history.history['loss']
+
+# Виводимо значення функції втрат
+plt.plot(loss)
+plt.xlabel('Епоха')
+plt.ylabel('Значення функції втрат')
+plt.title('Зміна функції втрат на кожній епосі тренування (2 приховані шари)')
+plt.show()
 
 # Проводимо апроксимацію на тестових даних навчання
 # Виконуємо передбачення за допомогою моделі
@@ -42,5 +53,5 @@ plt.scatter(x_test, y_test, s=1, color='red', label='Апроксимація')
 plt.legend()
 plt.xlabel('x')
 plt.ylabel('y')
-plt.title('Апроксимація функції y=2^x за допомогою нейромережі')
+plt.title('Апроксимація функції y=2^x за допомогою нейромережі (2 приховані шари)')
 plt.savefig(fname='aproximation.png', dpi=300)
